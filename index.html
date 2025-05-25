@@ -104,7 +104,6 @@
         }
         
         .value-display {
-            display: inline-block;
             background: #667eea;
             color: white;
             padding: 5px 10px;
@@ -113,6 +112,7 @@
             min-width: 50px;
             text-align: center;
             margin-left: 10px;
+            display: inline-block;
         }
         
         .buttons {
@@ -165,16 +165,15 @@
         
         .chart {
             width: 100%;
-            height: 250px;
+            min-height: 250px;
             border: 1px solid #dee2e6;
             border-radius: 5px;
             background: #f8f9fa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #6c757d;
-            font-size: 14px;
-            position: relative;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            line-height: 1.2;
+            overflow-x: auto;
         }
         
         .results {
@@ -213,28 +212,6 @@
             color: #a7f3d0;
         }
         
-        .explanation {
-            background: #f8f9fa;
-            border-left: 5px solid #667eea;
-            padding: 25px;
-            border-radius: 0 10px 10px 0;
-        }
-        
-        .explanation h2 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-        }
-        
-        .explanation ul {
-            margin: 15px 0;
-            padding-left: 25px;
-        }
-        
-        .explanation li {
-            margin: 10px 0;
-            line-height: 1.6;
-        }
-        
         .sample-controls {
             text-align: center;
             margin-top: 15px;
@@ -261,6 +238,28 @@
             color: #495057;
         }
         
+        .explanation {
+            background: #f8f9fa;
+            border-left: 5px solid #667eea;
+            padding: 25px;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .explanation h2, .explanation h3, .explanation h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .explanation ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+        
+        .explanation li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
         .formula {
             background: #fff3cd;
             border: 1px solid #ffeaa7;
@@ -270,6 +269,34 @@
             font-family: 'Courier New', monospace;
             text-align: center;
             font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .concept-box {
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid;
+        }
+        
+        .concept-box.teorico {
+            background: #e8f5e8;
+            border-left-color: #28a745;
+        }
+        
+        .concept-box.empirico {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+        }
+        
+        .concept-box.importante {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+        }
+        
+        .concept-box.ejemplo {
+            background: #d1ecf1;
+            border-left-color: #0dcaf0;
         }
         
         @media (max-width: 768px) {
@@ -349,8 +376,8 @@
                 </div>
                 
                 <div class="buttons">
-                    <button class="btn" id="run-simulation">🚀 Ejecutar Simulación</button>
-                    <button class="btn" id="reset-simulation">🔄 Reiniciar</button>
+                    <button class="btn" id="run-simulation" onclick="runSimulation()">🚀 Ejecutar Simulación</button>
+                    <button class="btn" id="reset-simulation" onclick="resetSimulation()">🔄 Reiniciar</button>
                 </div>
             </div>
             
@@ -358,33 +385,33 @@
                 <div class="chart-card">
                     <h3>📈 Distribución Poblacional</h3>
                     <div class="chart" id="population-chart">
-                        <div>Histograma de la población se mostrará aquí</div>
+                        Presiona "Ejecutar Simulación" para ver el histograma
                     </div>
                 </div>
                 
                 <div class="chart-card">
                     <h3>🎲 Muestra Individual</h3>
                     <div class="chart" id="sample-chart">
-                        <div>Valores de la muestra actual se mostrarán aquí</div>
+                        Presiona "Ejecutar Simulación" para ver la muestra
                     </div>
                     <div class="sample-controls">
-                        <button class="sample-btn" id="prev-sample">← Anterior</button>
+                        <button class="sample-btn" onclick="prevSample()">← Anterior</button>
                         <span class="sample-info" id="sample-info">Muestra 1 de 100</span>
-                        <button class="sample-btn" id="next-sample">Siguiente →</button>
+                        <button class="sample-btn" onclick="nextSample()">Siguiente →</button>
                     </div>
                 </div>
                 
                 <div class="chart-card">
                     <h3>📊 Distribución de Medias Muestrales</h3>
                     <div class="chart" id="sampling-chart">
-                        <div>Distribución de medias muestrales se mostrará aquí</div>
+                        Presiona "Ejecutar Simulación" para ver la distribución
                     </div>
                 </div>
                 
                 <div class="chart-card">
                     <h3>📉 Error Estándar vs Tamaño de Muestra</h3>
                     <div class="chart" id="error-chart">
-                        <div>Gráfico del Error Estándar se mostrará aquí</div>
+                        Presiona "Ejecutar Simulación" para ver el gráfico
                     </div>
                 </div>
             </div>
@@ -439,7 +466,7 @@
                 
                 <h3>🎯 Error Estándar Teórico vs Error Estándar Empírico</h3>
                 
-                <div style="background: #e8f5e8; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #28a745;">
+                <div class="concept-box teorico">
                     <h4>🧮 Error Estándar Teórico (σ/√n)</h4>
                     <p><strong>Definición:</strong> Es el valor que predice la teoría estadística usando la fórmula matemática del Teorema Central del Límite.</p>
                     <div class="formula">SE_teórico = σ/√n</div>
@@ -452,7 +479,7 @@
                     </ul>
                 </div>
                 
-                <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107;">
+                <div class="concept-box empirico">
                     <h4>🎯 Error Estándar Empírico (Práctico)</h4>
                     <p><strong>Definición:</strong> Es el valor que realmente observamos al medir la variabilidad de las medias muestrales en nuestra simulación.</p>
                     <p><strong>Cálculo:</strong> Es la desviación estándar de todas las medias muestrales que generamos.</p>
@@ -465,7 +492,7 @@
                     </ul>
                 </div>
                 
-                <div style="background: #f8d7da; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #dc3545;">
+                <div class="concept-box importante">
                     <h4>🔍 ¿Por qué son importantes ambos?</h4>
                     <p><strong>1. Validación del Teorema Central del Límite:</strong></p>
                     <ul>
@@ -487,7 +514,7 @@
                     </ul>
                 </div>
                 
-                <div style="background: #d1ecf1; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #0dcaf0;">
+                <div class="concept-box ejemplo">
                     <h4>📊 Ejemplo práctico:</h4>
                     <p>Si tienes: σ = 15 y n = 25</p>
                     <p><strong>Error Estándar Teórico</strong> = 15/√25 = 15/5 = <strong>3.0</strong></p>
@@ -505,7 +532,7 @@
     </div>
 
     <script>
-        // Variables globales para almacenar datos
+        // Variables globales
         let populationData = [];
         let allSamples = [];
         let sampleMeans = [];
@@ -519,7 +546,7 @@
         let distributionType = "uniform";
         
         // Función para generar números aleatorios con distribución normal
-        function normalRandom(mean = 0, sd = 1) {
+        function normalRandom(mean, sd) {
             let u = 0, v = 0;
             while(u === 0) u = Math.random();
             while(v === 0) v = Math.random();
@@ -581,9 +608,14 @@
             }
         }
         
-        // Función para crear visualización simple de histograma
-        function createSimpleHistogram(containerId, data, title) {
+        // Función para crear histograma
+        function createHistogram(containerId, data, title) {
             const container = document.getElementById(containerId);
+            if (!data || data.length === 0) {
+                container.innerHTML = "No hay datos para mostrar";
+                return;
+            }
+            
             const min = Math.min(...data);
             const max = Math.max(...data);
             const bins = 20;
@@ -596,22 +628,21 @@
                 histogram[binIndex]++;
             });
             
-            // Crear visualización ASCII simple
+            // Crear visualización
             const maxCount = Math.max(...histogram);
-            let html = `<div style="font-family: monospace; font-size: 12px; line-height: 1.2;">`;
-            html += `<div style="text-align: center; margin-bottom: 10px; font-weight: bold;">${title}</div>`;
+            let html = `<div><strong>${title}</strong><br><br>`;
             
             for (let i = 0; i < bins; i++) {
-                const height = Math.round((histogram[i] / maxCount) * 10);
-                const bar = '█'.repeat(height) + '░'.repeat(10 - height);
+                const height = Math.round((histogram[i] / maxCount) * 15);
+                const bar = '█'.repeat(height) + '░'.repeat(15 - height);
                 const binStart = (min + i * binWidth).toFixed(1);
-                html += `<div>${binStart}: ${bar} (${histogram[i]})</div>`;
+                html += `${binStart.padStart(6)}: ${bar} (${histogram[i]})<br>`;
             }
             
-            html += `<div style="margin-top: 10px;">`;
-            html += `<strong>Media:</strong> ${(data.reduce((a, b) => a + b, 0) / data.length).toFixed(2)}<br>`;
-            html += `<strong>Min:</strong> ${min.toFixed(2)} | <strong>Max:</strong> ${max.toFixed(2)}`;
-            html += `</div></div>`;
+            const mean = data.reduce((a, b) => a + b, 0) / data.length;
+            html += `<br><strong>Media:</strong> ${mean.toFixed(2)}`;
+            html += `<br><strong>Min:</strong> ${min.toFixed(2)} | <strong>Max:</strong> ${max.toFixed(2)}`;
+            html += `</div>`;
             
             container.innerHTML = html;
         }
@@ -624,129 +655,46 @@
             const sampleMean = sampleMeans[currentSampleIndex];
             const container = document.getElementById('sample-chart');
             
-            let html = `<div style="font-family: monospace; font-size: 14px;">`;
-            html += `<div style="text-align: center; margin-bottom: 15px; font-weight: bold;">Muestra ${currentSampleIndex + 1}</div>`;
-            html += `<div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 15px;">`;
+            let html = `<div><strong>Muestra ${currentSampleIndex + 1}</strong><br><br>`;
+            html += `<strong>Valores:</strong><br>`;
             
             sample.forEach((value, index) => {
-                html += `<div style="background: #e74c3c; color: white; padding: 5px 8px; border-radius: 5px; font-size: 12px;">`;
-                html += `${index + 1}: ${value.toFixed(1)}`;
-                html += `</div>`;
+                html += `${index + 1}: ${value.toFixed(2)} `;
+                if ((index + 1) % 5 === 0) html += '<br>';
             });
             
+            html += `<br><br><strong>Media Muestral:</strong> ${sampleMean.toFixed(3)}`;
+            html += `<br><strong>Media Poblacional:</strong> ${populationMean.toFixed(2)}`;
+            html += `<br><strong>Diferencia:</strong> ${Math.abs(sampleMean - populationMean).toFixed(3)}`;
             html += `</div>`;
-            html += `<div style="text-align: center; margin-top: 15px;">`;
-            html += `<div style="background: #e74c3c; color: white; padding: 8px; border-radius: 5px; display: inline-block; margin: 5px;">`;
-            html += `<strong>Media Muestral:</strong> ${sampleMean.toFixed(2)}`;
-            html += `</div>`;
-            html += `<div style="background: #27ae60; color: white; padding: 8px; border-radius: 5px; display: inline-block; margin: 5px;">`;
-            html += `<strong>Media Poblacional:</strong> ${populationMean.toFixed(2)}`;
-            html += `</div>`;
-            html += `</div></div>`;
             
             container.innerHTML = html;
             document.getElementById('sample-info').textContent = `Muestra ${currentSampleIndex + 1} de ${numSamples}`;
         }
         
-        // Función para mostrar el comportamiento del error estándar
+        // Función para mostrar error estándar
         function showErrorChart() {
             const container = document.getElementById('error-chart');
-            let html = `<div style="font-family: monospace; font-size: 12px;">`;
-            html += `<div style="text-align: center; margin-bottom: 15px; font-weight: bold;">Error Estándar vs Tamaño de Muestra</div>`;
+            let html = `<div><strong>Error Estándar vs Tamaño de Muestra</strong><br><br>`;
             
             const nValues = [1, 5, 10, 20, 30, 50, 75, 100];
-            html += `<table style="width: 100%; border-collapse: collapse;">`;
-            html += `<tr style="background: #f8f9fa;"><th style="padding: 8px; border: 1px solid #dee2e6;">n</th><th style="padding: 8px; border: 1px solid #dee2e6;">SE = σ/√n</th></tr>`;
+            html += `${'n'.padStart(4)} | ${'SE'.padStart(8)}<br>`;
+            html += `${'-'.repeat(4)} | ${'-'.repeat(8)}<br>`;
             
             nValues.forEach(n => {
                 const se = (populationSd / Math.sqrt(n)).toFixed(3);
                 const isCurrentSize = n === sampleSize;
-                const rowStyle = isCurrentSize ? 'background: #fff3cd; font-weight: bold;' : '';
-                html += `<tr style="${rowStyle}"><td style="padding: 8px; border: 1px solid #dee2e6; text-align: center;">${n}</td><td style="padding: 8px; border: 1px solid #dee2e6; text-align: center;">${se}</td></tr>`;
+                const marker = isCurrentSize ? ' ← ACTUAL' : '';
+                html += `${n.toString().padStart(4)} | ${se.padStart(8)}${marker}<br>`;
             });
             
-            html += `</table>`;
-            html += `<div style="margin-top: 15px; text-align: center; background: #e74c3c; color: white; padding: 10px; border-radius: 5px;">`;
-            html += `<strong>n actual = ${sampleSize}</strong><br>`;
-            html += `<strong>SE actual = ${(populationSd / Math.sqrt(sampleSize)).toFixed(4)}</strong>`;
-            html += `</div></div>`;
+            const currentSE = populationSd / Math.sqrt(sampleSize);
+            html += `<br><strong>n actual = ${sampleSize}</strong>`;
+            html += `<br><strong>SE actual = ${currentSE.toFixed(4)}</strong>`;
+            html += `</div>`;
             
             container.innerHTML = html;
         }
         
-        // Función para actualizar la tabla de resultados
-        function updateResultsTable() {
-            const theoreticalSE = populationSd / Math.sqrt(sampleSize);
-            const empiricalMean = sampleMeans.reduce((a, b) => a + b, 0) / sampleMeans.length;
-            const empiricalSE = Math.sqrt(sampleMeans.reduce((sum, mean) => 
-                sum + Math.pow(mean - empiricalMean, 2), 0) / (sampleMeans.length - 1));
-            
-            document.getElementById("result-pop-mean").textContent = populationMean.toFixed(2);
-            document.getElementById("result-pop-sd").textContent = populationSd.toFixed(2);
-            document.getElementById("result-sample-size").textContent = sampleSize;
-            document.getElementById("result-theoretical-se").textContent = theoreticalSE.toFixed(4);
-            document.getElementById("result-sample-means-mean").textContent = empiricalMean.toFixed(4);
-            document.getElementById("result-sample-means-sd").textContent = empiricalSE.toFixed(4);
-        }
-        
-        // Función principal de simulación
-        function runSimulation() {
-            console.log("Ejecutando simulación...");
-            generatePopulation();
-            takeSamples();
-            currentSampleIndex = 0;
-            
-            // Actualizar visualizaciones
-            createSimpleHistogram('population-chart', populationData, `Distribución ${distributionType.toUpperCase()}`);
-            createSimpleHistogram('sampling-chart', sampleMeans, 'Distribución de Medias Muestrales');
-            showSample();
-            showErrorChart();
-            updateResultsTable();
-            
-            console.log("Simulación completada");
-        }
-        
-        // Event listeners para los controles
-        document.getElementById("population-mean").addEventListener("input", function() {
-            populationMean = parseInt(this.value);
-            document.getElementById("population-mean-value").textContent = populationMean;
-        });
-        
-        document.getElementById("population-sd").addEventListener("input", function() {
-            populationSd = parseInt(this.value);
-            document.getElementById("population-sd-value").textContent = populationSd;
-        });
-        
-        document.getElementById("sample-size").addEventListener("input", function() {
-            sampleSize = parseInt(this.value);
-            document.getElementById("sample-size-value").textContent = sampleSize;
-        });
-        
-        document.getElementById("num-samples").addEventListener("input", function() {
-            numSamples = parseInt(this.value);
-            document.getElementById("num-samples-value").textContent = numSamples;
-        });
-        
-        document.getElementById("distribution-type").addEventListener("change", function() {
-            distributionType = this.value;
-        });
-        
-        document.getElementById("run-simulation").addEventListener("click", function() {
-            console.log("Botón de simulación presionado");
-            runSimulation();
-        });
-        
-        document.getElementById("reset-simulation").addEventListener("click", function() {
-            console.log("Botón de reset presionado");
-            populationMean = 50;
-            populationSd = 15;
-            sampleSize = 5;
-            numSamples = 100;
-            distributionType = "uniform";
-            
-            document.getElementById("population-mean").value = 50;
-            document.getElementById("population-mean-value").textContent = 50;
-            document.getElementById("population-sd").value = 15;
-            document.getElementById("population-sd-value").textContent = 15;
-            document.getElementById("sample-size").value = 5;
-            document.getElementById("sample-size-value").textContent = 5;
+        // Función para actualizar resultados
+        function updateResults()
