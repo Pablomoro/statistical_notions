@@ -436,6 +436,70 @@
                     <li>🧮 <strong>La fórmula del Error Estándar (SE = σ/√n) modela el concepto del teorema central del límite.</strong></li>
                     <li>📊 <strong>A medida que aumenta el tamaño de muestra (n), la distribución de medias muestrales se vuelve más estrecha (menor variabilidad) y la forma de la distribución de medias muestrales se aproxima a una normal incluso cuando la distribución poblacional no lo es.</strong></li>
                 </ul>
+                
+                <h3>🎯 Error Estándar Teórico vs Error Estándar Empírico</h3>
+                
+                <div style="background: #e8f5e8; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #28a745;">
+                    <h4>🧮 Error Estándar Teórico (σ/√n)</h4>
+                    <p><strong>Definición:</strong> Es el valor que predice la teoría estadística usando la fórmula matemática del Teorema Central del Límite.</p>
+                    <div class="formula">SE_teórico = σ/√n</div>
+                    <p><strong>Características:</strong></p>
+                    <ul>
+                        <li>Es un <strong>valor calculado</strong> directamente de la fórmula</li>
+                        <li>Representa lo que <strong>debería ocurrir</strong> según la teoría</li>
+                        <li>Es <strong>constante</strong> para valores fijos de σ y n</li>
+                        <li>No depende de las muestras específicas que tomes</li>
+                    </ul>
+                </div>
+                
+                <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107;">
+                    <h4>🎯 Error Estándar Empírico (Práctico)</h4>
+                    <p><strong>Definición:</strong> Es el valor que realmente observamos al medir la variabilidad de las medias muestrales en nuestra simulación.</p>
+                    <p><strong>Cálculo:</strong> Es la desviación estándar de todas las medias muestrales que generamos.</p>
+                    <p><strong>Características:</strong></p>
+                    <ul>
+                        <li>Es un <strong>valor observado</strong> de los datos reales</li>
+                        <li>Representa lo que <strong>realmente ocurre</strong> en la práctica</li>
+                        <li><strong>Varía ligeramente</strong> cada vez que ejecutas la simulación</li>
+                        <li>Depende de las muestras específicas generadas</li>
+                    </ul>
+                </div>
+                
+                <div style="background: #f8d7da; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #dc3545;">
+                    <h4>🔍 ¿Por qué son importantes ambos?</h4>
+                    <p><strong>1. Validación del Teorema Central del Límite:</strong></p>
+                    <ul>
+                        <li>Si el TCL es correcto, ambos valores deberían ser <strong>muy similares</strong></li>
+                        <li>Cuando aumentas el número de muestras, se acercan más</li>
+                    </ul>
+                    
+                    <p><strong>2. Aplicación práctica:</strong></p>
+                    <ul>
+                        <li><strong>Teórico:</strong> Te permite predecir la precisión antes de hacer el estudio</li>
+                        <li><strong>Empírico:</strong> Te muestra la precisión real que obtuviste</li>
+                    </ul>
+                    
+                    <p><strong>3. En la simulación puedes observar:</strong></p>
+                    <ul>
+                        <li>Con pocas muestras (ej: 10), pueden diferir bastante</li>
+                        <li>Con muchas muestras (ej: 1000), se vuelven casi idénticos</li>
+                        <li>Esto <strong>demuestra</strong> que la fórmula teórica funciona</li>
+                    </ul>
+                </div>
+                
+                <div style="background: #d1ecf1; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #0dcaf0;">
+                    <h4>📊 Ejemplo práctico:</h4>
+                    <p>Si tienes: σ = 15 y n = 25</p>
+                    <p><strong>Error Estándar Teórico</strong> = 15/√25 = 15/5 = <strong>3.0</strong></p>
+                    <p><strong>Error Estándar Empírico</strong> podría ser <strong>2.97</strong> o <strong>3.03</strong> (muy cercano, pero no exacto)</p>
+                    
+                    <p><strong>🎯 La diferencia te enseña:</strong></p>
+                    <ol>
+                        <li><strong>Que la teoría funciona</strong> (cuando son similares)</li>
+                        <li><strong>El efecto del azar</strong> (la pequeña diferencia)</li>
+                        <li><strong>La importancia del tamaño de muestra</strong> (a mayor n, más similares)</li>
+                    </ol>
+                </div>
             </div>
         </div>
     </div>
