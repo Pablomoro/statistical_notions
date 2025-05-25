@@ -376,8 +376,8 @@
                 </div>
                 
                 <div class="buttons">
-                    <button class="btn" id="run-simulation" onclick="runSimulation()">🚀 Ejecutar Simulación</button>
-                    <button class="btn" id="reset-simulation" onclick="resetSimulation()">🔄 Reiniciar</button>
+                    <button class="btn" id="run-simulation">🚀 Ejecutar Simulación</button>
+                    <button class="btn" id="reset-simulation">🔄 Reiniciar</button>
                 </div>
             </div>
             
@@ -395,9 +395,9 @@
                         Presiona "Ejecutar Simulación" para ver la muestra
                     </div>
                     <div class="sample-controls">
-                        <button class="sample-btn" onclick="prevSample()">← Anterior</button>
+                        <button class="sample-btn" id="prev-sample">← Anterior</button>
                         <span class="sample-info" id="sample-info">Muestra 1 de 100</span>
-                        <button class="sample-btn" onclick="nextSample()">Siguiente →</button>
+                        <button class="sample-btn" id="next-sample">Siguiente →</button>
                     </div>
                 </div>
                 
@@ -533,24 +533,24 @@
 
     <script>
         // Variables globales
-        let populationData = [];
-        let allSamples = [];
-        let sampleMeans = [];
-        let currentSampleIndex = 0;
+        var populationData = [];
+        var allSamples = [];
+        var sampleMeans = [];
+        var currentSampleIndex = 0;
         
         // Configuración inicial
-        let populationMean = 50;
-        let populationSd = 15;
-        let sampleSize = 5;
-        let numSamples = 100;
-        let distributionType = "uniform";
+        var populationMean = 50;
+        var populationSd = 15;
+        var sampleSize = 5;
+        var numSamples = 100;
+        var distributionType = "uniform";
         
         // Función para generar números aleatorios con distribución normal
         function normalRandom(mean, sd) {
-            let u = 0, v = 0;
+            var u = 0, v = 0;
             while(u === 0) u = Math.random();
             while(v === 0) v = Math.random();
-            let z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+            var z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
             return z * sd + mean;
         }
         
@@ -558,14 +558,14 @@
         function generatePopulation() {
             populationData = [];
             
-            for (let i = 0; i < 10000; i++) {
-                let value;
+            for (var i = 0; i < 10000; i++) {
+                var value;
                 
                 switch(distributionType) {
                     case "uniform":
-                        const range = Math.sqrt(12) * populationSd;
-                        const min = populationMean - range / 2;
-                        const max = populationMean + range / 2;
+                        var range = Math.sqrt(12) * populationSd;
+                        var min = populationMean - range / 2;
+                        var max = populationMean + range / 2;
                         value = min + Math.random() * (max - min);
                         break;
                         
@@ -574,8 +574,8 @@
                         break;
                         
                     case "exponential":
-                        const lambda = 1 / populationSd;
-                        const shift = populationMean - populationSd;
+                        var lambda = 1 / populationSd;
+                        var shift = populationMean - populationSd;
                         value = -Math.log(Math.random()) / lambda + shift;
                         break;
                         
@@ -597,52 +597,204 @@
             allSamples = [];
             sampleMeans = [];
             
-            for (let i = 0; i < numSamples; i++) {
-                const sample = [];
-                for (let j = 0; j < sampleSize; j++) {
-                    const randomIndex = Math.floor(Math.random() * populationData.length);
+            for (var i = 0; i < numSamples; i++) {
+                var sample = [];
+                for (var j = 0; j < sampleSize; j++) {
+                    var randomIndex = Math.floor(Math.random() * populationData.length);
                     sample.push(populationData[randomIndex]);
                 }
                 allSamples.push(sample);
-                sampleMeans.push(sample.reduce((a, b) => a + b, 0) / sample.length);
+                var mean = sample.reduce(function(a, b) { return a + b; }, 0) / sample.length;
+                sampleMeans.push(mean);
             }
         }
         
         // Función para crear histograma
         function createHistogram(containerId, data, title) {
-            const container = document.getElementById(containerId);
+            var container = document.getElementById(containerId);
             if (!data || data.length === 0) {
-                container.innerHTML = "No hay datos para mostrar";
+                container.innerHTML = html;
+        }
+        
+        // Función para actualizar resultados
+        function updateResults() {
+            var theoreticalSE = populationSd / Math.sqrt(sampleSize);
+            var empiricalMean = sampleMeans.reduce(function(a, b) { return a + b; }, 0) / sampleMeans.length;
+            var sumSquares = sampleMeans.reduce(function(sum, mean) { 
+                return sum + Math.pow(mean - empiricalMean, 2);
+            }, 0);
+            var empiricalSE = Math.sqrt(sumSquares / (sampleMeans.length - 1));
+            
+            document.getElementById("result-pop-mean").textContent = populationMean.toFixed(2);
+            document.getElementById("result-pop-sd").textContent = populationSd.toFixed(2);
+            document.getElementById("result-sample-size").textContent = sampleSize;
+            document.getElementById("result-theoretical-se").textContent = theoreticalSE.toFixed(4);
+            document.getElementById("result-sample-means-mean").textContent = empiricalMean.toFixed(4);
+            document.getElementById("result-sample-means-sd").textContent = empiricalSE.toFixed(4);
+        }
+        
+        // Función principal de simulación (GLOBAL)
+        function runSimulation() {
+            console.log("Ejecutando simulación...");
+            generatePopulation();
+            takeSamples();
+            currentSampleIndex = 0;
+            
+            // Actualizar visualizaciones
+            createHistogram('population-chart', populationData, 'Distribución ' + distributionType.toUpperCase());
+            createHistogram('sampling-chart', sampleMeans, 'Distribución de Medias Muestrales');
+            showSample();
+            showErrorChart();
+            updateResults();
+            
+            console.log("Simulación completada");
+        }
+        
+        // Función para reiniciar (GLOBAL)
+        function resetSimulation() {
+            populationMean = 50;
+            populationSd = 15;
+            sampleSize = 5;
+            numSamples = 100;
+            distributionType = "uniform";
+            
+            document.getElementById("population-mean").value = 50;
+            document.getElementById("population-mean-value").textContent = 50;
+            document.getElementById("population-sd").value = 15;
+            document.getElementById("population-sd-value").textContent = 15;
+            document.getElementById("sample-size").value = 5;
+            document.getElementById("sample-size-value").textContent = 5;
+            document.getElementById("num-samples").value = 100;
+            document.getElementById("num-samples-value").textContent = 100;
+            document.getElementById("distribution-type").value = "uniform";
+            
+            runSimulation();
+        }
+        
+        // Funciones para navegación de muestras (GLOBALES)
+        function prevSample() {
+            if (allSamples.length > 0) {
+                currentSampleIndex = (currentSampleIndex - 1 + allSamples.length) % allSamples.length;
+                showSample();
+            }
+        }
+        
+        function nextSample() {
+            if (allSamples.length > 0) {
+                currentSampleIndex = (currentSampleIndex + 1) % allSamples.length;
+                showSample();
+            }
+        }
+        
+        // Inicialización cuando se carga la página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Event listeners para controles
+            document.getElementById("population-mean").addEventListener("input", function() {
+                populationMean = parseInt(this.value);
+                document.getElementById("population-mean-value").textContent = populationMean;
+            });
+            
+            document.getElementById("population-sd").addEventListener("input", function() {
+                populationSd = parseInt(this.value);
+                document.getElementById("population-sd-value").textContent = populationSd;
+            });
+            
+            document.getElementById("sample-size").addEventListener("input", function() {
+                sampleSize = parseInt(this.value);
+                document.getElementById("sample-size-value").textContent = sampleSize;
+            });
+            
+            document.getElementById("num-samples").addEventListener("input", function() {
+                numSamples = parseInt(this.value);
+                document.getElementById("num-samples-value").textContent = numSamples;
+            });
+            
+            document.getElementById("distribution-type").addEventListener("change", function() {
+                distributionType = this.value;
+            });
+            
+            // Event listeners para botones
+            document.getElementById("run-simulation").addEventListener("click", runSimulation);
+            document.getElementById("reset-simulation").addEventListener("click", resetSimulation);
+            document.getElementById("prev-sample").addEventListener("click", prevSample);
+            document.getElementById("next-sample").addEventListener("click", nextSample);
+            
+            // Ejecutar simulación inicial
+            setTimeout(function() {
+                runSimulation();
+            }, 100);
+        });
+        
+        // Polyfill para String.prototype.padStart si no existe
+        if (!String.prototype.padStart) {
+            String.prototype.padStart = function padStart(targetLength, padString) {
+                targetLength = targetLength >> 0;
+                padString = String(typeof padString !== 'undefined' ? padString : ' ');
+                if (this.length > targetLength) {
+                    return String(this);
+                } else {
+                    targetLength = targetLength - this.length;
+                    if (targetLength > padString.length) {
+                        padString += padString.repeat(targetLength / padString.length);
+                    }
+                    return padString.slice(0, targetLength) + String(this);
+                }
+            };
+        }
+        
+        // Polyfill para String.prototype.repeat si no existe
+        if (!String.prototype.repeat) {
+            String.prototype.repeat = function(count) {
+                if (count < 0) {
+                    throw new RangeError('repeat count must be non-negative');
+                }
+                if (count == Infinity) {
+                    throw new RangeError('repeat count must be less than infinity');
+                }
+                count = Math.floor(count);
+                if (this.length == 0 || count == 0) {
+                    return '';
+                }
+                var result = '';
+                for (var i = 0; i < count; i++) {
+                    result += this;
+                }
+                return result;
+            };
+        }
+    </script>
+</body>
+</html> = "No hay datos para mostrar";
                 return;
             }
             
-            const min = Math.min(...data);
-            const max = Math.max(...data);
-            const bins = 20;
-            const binWidth = (max - min) / bins;
+            var min = Math.min.apply(Math, data);
+            var max = Math.max.apply(Math, data);
+            var bins = 20;
+            var binWidth = (max - min) / bins;
             
             // Crear bins
-            const histogram = new Array(bins).fill(0);
-            data.forEach(value => {
-                const binIndex = Math.min(Math.floor((value - min) / binWidth), bins - 1);
+            var histogram = new Array(bins).fill(0);
+            data.forEach(function(value) {
+                var binIndex = Math.min(Math.floor((value - min) / binWidth), bins - 1);
                 histogram[binIndex]++;
             });
             
             // Crear visualización
-            const maxCount = Math.max(...histogram);
-            let html = `<div><strong>${title}</strong><br><br>`;
+            var maxCount = Math.max.apply(Math, histogram);
+            var html = "<div><strong>" + title + "</strong><br><br>";
             
-            for (let i = 0; i < bins; i++) {
-                const height = Math.round((histogram[i] / maxCount) * 15);
-                const bar = '█'.repeat(height) + '░'.repeat(15 - height);
-                const binStart = (min + i * binWidth).toFixed(1);
-                html += `${binStart.padStart(6)}: ${bar} (${histogram[i]})<br>`;
+            for (var i = 0; i < bins; i++) {
+                var height = Math.round((histogram[i] / maxCount) * 15);
+                var bar = '█'.repeat(height) + '░'.repeat(15 - height);
+                var binStart = (min + i * binWidth).toFixed(1);
+                html += binStart.padStart(6, ' ') + ": " + bar + " (" + histogram[i] + ")<br>";
             }
             
-            const mean = data.reduce((a, b) => a + b, 0) / data.length;
-            html += `<br><strong>Media:</strong> ${mean.toFixed(2)}`;
-            html += `<br><strong>Min:</strong> ${min.toFixed(2)} | <strong>Max:</strong> ${max.toFixed(2)}`;
-            html += `</div>`;
+            var mean = data.reduce(function(a, b) { return a + b; }, 0) / data.length;
+            html += "<br><strong>Media:</strong> " + mean.toFixed(2);
+            html += "<br><strong>Min:</strong> " + min.toFixed(2) + " | <strong>Max:</strong> " + max.toFixed(2);
+            html += "</div>";
             
             container.innerHTML = html;
         }
@@ -651,50 +803,46 @@
         function showSample() {
             if (allSamples.length === 0) return;
             
-            const sample = allSamples[currentSampleIndex];
-            const sampleMean = sampleMeans[currentSampleIndex];
-            const container = document.getElementById('sample-chart');
+            var sample = allSamples[currentSampleIndex];
+            var sampleMean = sampleMeans[currentSampleIndex];
+            var container = document.getElementById('sample-chart');
             
-            let html = `<div><strong>Muestra ${currentSampleIndex + 1}</strong><br><br>`;
-            html += `<strong>Valores:</strong><br>`;
+            var html = "<div><strong>Muestra " + (currentSampleIndex + 1) + "</strong><br><br>";
+            html += "<strong>Valores:</strong><br>";
             
-            sample.forEach((value, index) => {
-                html += `${index + 1}: ${value.toFixed(2)} `;
+            sample.forEach(function(value, index) {
+                html += (index + 1) + ": " + value.toFixed(2) + " ";
                 if ((index + 1) % 5 === 0) html += '<br>';
             });
             
-            html += `<br><br><strong>Media Muestral:</strong> ${sampleMean.toFixed(3)}`;
-            html += `<br><strong>Media Poblacional:</strong> ${populationMean.toFixed(2)}`;
-            html += `<br><strong>Diferencia:</strong> ${Math.abs(sampleMean - populationMean).toFixed(3)}`;
-            html += `</div>`;
+            html += "<br><br><strong>Media Muestral:</strong> " + sampleMean.toFixed(3);
+            html += "<br><strong>Media Poblacional:</strong> " + populationMean.toFixed(2);
+            html += "<br><strong>Diferencia:</strong> " + Math.abs(sampleMean - populationMean).toFixed(3);
+            html += "</div>";
             
             container.innerHTML = html;
-            document.getElementById('sample-info').textContent = `Muestra ${currentSampleIndex + 1} de ${numSamples}`;
+            document.getElementById('sample-info').textContent = "Muestra " + (currentSampleIndex + 1) + " de " + numSamples;
         }
         
         // Función para mostrar error estándar
         function showErrorChart() {
-            const container = document.getElementById('error-chart');
-            let html = `<div><strong>Error Estándar vs Tamaño de Muestra</strong><br><br>`;
+            var container = document.getElementById('error-chart');
+            var html = "<div><strong>Error Estándar vs Tamaño de Muestra</strong><br><br>";
             
-            const nValues = [1, 5, 10, 20, 30, 50, 75, 100];
-            html += `${'n'.padStart(4)} | ${'SE'.padStart(8)}<br>`;
-            html += `${'-'.repeat(4)} | ${'-'.repeat(8)}<br>`;
+            var nValues = [1, 5, 10, 20, 30, 50, 75, 100];
+            html += "   n |       SE<br>";
+            html += "---- | --------<br>";
             
-            nValues.forEach(n => {
-                const se = (populationSd / Math.sqrt(n)).toFixed(3);
-                const isCurrentSize = n === sampleSize;
-                const marker = isCurrentSize ? ' ← ACTUAL' : '';
-                html += `${n.toString().padStart(4)} | ${se.padStart(8)}${marker}<br>`;
+            nValues.forEach(function(n) {
+                var se = (populationSd / Math.sqrt(n)).toFixed(3);
+                var isCurrentSize = n === sampleSize;
+                var marker = isCurrentSize ? ' ← ACTUAL' : '';
+                html += n.toString().padStart(4, ' ') + " | " + se.padStart(8, ' ') + marker + "<br>";
             });
             
-            const currentSE = populationSd / Math.sqrt(sampleSize);
-            html += `<br><strong>n actual = ${sampleSize}</strong>`;
-            html += `<br><strong>SE actual = ${currentSE.toFixed(4)}</strong>`;
-            html += `</div>`;
+            var currentSE = populationSd / Math.sqrt(sampleSize);
+            html += "<br><strong>n actual = " + sampleSize + "</strong>";
+            html += "<br><strong>SE actual = " + currentSE.toFixed(4) + "</strong>";
+            html += "</div>";
             
-            container.innerHTML = html;
-        }
-        
-        // Función para actualizar resultados
-        function updateResults()
+            container.innerHTML
